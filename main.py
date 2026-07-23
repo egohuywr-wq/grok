@@ -1,30 +1,36 @@
 import os
-from openai import OpenAI
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
+from openai import OpenAI
+
+load_dotenv()
 
 client = OpenAI(
     api_key=os.getenv("GROQ_API_KEY"),
-    base_url="https://api.groq.com/openai/v1",
+    base_url="https://api.groq.com/openai/v1"
 )
 
-app = FastAPI(title="Groq AI API")
+app = FastAPI(
+    title="Groq AI API",
+    version="1.0"
+)
 
 @app.get("/")
-def home():
+async def home():
     return {
         "status": True,
-        "message": "API is running"
+        "message": "Groq AI API Running"
     }
 
 @app.get("/api/ai/gpt")
-async def gpt(q: str = Query(...)):
+async def chat(q: str = Query(...)):
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[
                 {
                     "role": "system",
-                    "content": "Reply in the same language as the user."
+                    "content": "You are a helpful AI assistant. Reply in the same language as the user."
                 },
                 {
                     "role": "user",
